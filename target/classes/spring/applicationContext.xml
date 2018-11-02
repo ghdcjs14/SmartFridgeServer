@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-2.0.xsd">
+
+
+ 	<!-- properties 등록 -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:properties/db.properties</value>
+            </list>
+        </property>
+    </bean>		
+ 
+    <!-- MongoDB -->
+    <mongo:mongo-client 
+    	id="mongoClient" 
+    	host="${host}" 
+    	port="${port}">
+    	<mongo:client-options
+            connections-per-host="8"
+            threads-allowed-to-block-for-connection-multiplier="4"
+            connect-timeout="1000"
+            max-wait-time="1500"
+            socket-keep-alive="false"
+            socket-timeout="1500"
+        />
+   	</mongo:mongo-client>
+    
+    
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+    	<constructor-arg ref="mongoClient" />
+    	<constructor-arg name="databaseName" value="${dbname}" />
+    </bean>
+    
+
+</beans>
