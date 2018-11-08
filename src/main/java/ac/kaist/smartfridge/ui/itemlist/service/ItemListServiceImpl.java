@@ -102,4 +102,17 @@ public class ItemListServiceImpl implements ItemListService {
 		}
 		return  null;
 	}
+
+	@Override
+	public void insertItem(ItemListVO vo) {
+		try {
+			System.out.println("mongoTemplate: " + mongoTemplate);
+			mongoTemplate.insert(vo,"ItemListTb");
+		   
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	
 }

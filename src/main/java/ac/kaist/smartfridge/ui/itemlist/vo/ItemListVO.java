@@ -15,6 +15,8 @@ public class ItemListVO {
     private String itemName;			// 상품명 
     private Double count;				// 개수
     private String remark;				// 비고
+    private String verificationNumber;	// 체크 디지트
+    
 	public String getId() {
 		return id;
 	}
@@ -81,6 +83,21 @@ public class ItemListVO {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-    
+	public String getVerificationNumber() {
+		return verificationNumber;
+	}
+	public void setVerificationNumber(String verificationNumber) {
+		this.verificationNumber = verificationNumber;
+	}
+	@Override
+	public String toString() {
+		return "ItemListVO [id=" + id + ", fullCode=" + fullCode + ", indicator=" + indicator + ", memberOrganization="
+				+ memberOrganization + ", companyNumber=" + companyNumber + ", itemReference=" + itemReference
+				+ ", manufacturedDate=" + manufacturedDate + ", expirationDate=" + expirationDate + ", itemName="
+				+ itemName + ", count=" + count + ", remark=" + remark + ", verificationNumber=" + verificationNumber
+				+ "]";
+	}
+	
+	
     
 }

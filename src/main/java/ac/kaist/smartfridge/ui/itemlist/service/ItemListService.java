@@ -17,4 +17,6 @@ public interface ItemListService {
 	public WriteResult updateItem(String key, ObjectId value, ItemListVO vo);
 	
 	public WriteResult deleteItem(String key, ObjectId value);
+	
+	public void insertItem(ItemListVO vo);
 }
