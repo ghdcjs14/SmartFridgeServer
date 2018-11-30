@@ -9,7 +9,7 @@
 	            <i class="fa fa-navicon fa-fw"></i>
 	        </a>
 	        <ul class="dropdown-menu dropdown-user">
-	            <div class="navbar-default sidebar" role="navigation">+
+	            <div class="navbar-default sidebar" role="navigation">
 				    <div class="sidebar-nav navbar-collapse">
 				        <ul class="nav" id="side-menu">
 				        	<li>
@@ -19,15 +19,7 @@
 				                <a href="../FridgeCam/showImage"><i class="fa fa-camera fa-fw"></i> Fridge Cam</a>
 				            </li>
 				            <li>
-				                <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Statistics<span class="fa arrow"></span></a>
-				                <ul class="nav nav-second-level">
-				                    <li>
-				                        <a href="flot.html">Flot Charts</a>
-				                    </li>
-				                    <li>
-				                        <a href="morris.html">Morris.js Charts</a>
-				                    </li>
-				                </ul>
+				                <a href="../Statistics/epcisEvent"><i class="fa fa-bar-chart-o fa-fw"></i> Statistics</a>
 				            </li>
 				        </ul>
 				    </div>
@@ -37,13 +29,7 @@
 	    </li>
 	</ul>
 	<div class="navbar-header">
-	    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-	        <span class="sr-only">Toggle navigation</span>
-	        <span class="icon-bar"></span>
-	        <span class="icon-bar"></span>
-	        <span class="icon-bar"></span>
-	    </button>
-	    <a class="navbar-brand" href="getItemList">Smart Fridge v1.0</a>
+	    <a class="navbar-brand" href="../Item/getItemList">Smart Fridge v1.0</a>
 	</div>
 	<!-- /.navbar-header -->
 	<ul class="nav navbar-top-links navbar-right">
@@ -145,31 +131,4 @@
 	    <!-- /.dropdown -->
 	</ul>
 	<!-- /.navbar-top-links -->
-	
-	<!-- 
-	<div class="navbar-default sidebar" role="navigation">
-	    <div class="sidebar-nav navbar-collapse">
-	        <ul class="nav" id="side-menu">
-	        	<li>
-	                <a href="../Item/getItemList"><i class="fa fa-table fa-fw"></i> Item List</a>
-	            </li>
-	            <li>
-	                <a href="../FridgeCam/showImage"><i class="fa fa-camera fa-fw"></i> Fridge Cam</a>
-	            </li>
-	            <li>
-	                <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Statistics<span class="fa arrow"></span></a>
-	                <ul class="nav nav-second-level">
-	                    <li>
-	                        <a href="flot.html">Flot Charts</a>
-	                    </li>
-	                    <li>
-	                        <a href="morris.html">Morris.js Charts</a>
-	                    </li>
-	                </ul>
-	            </li>
-	        </ul>
-	    </div>
-	</div>
-	 -->
-	<!-- /.navbar-static-side -->
 </nav>

@@ -1,2 +1,6 @@
-console.log("안녕???????")
-//테이블의 Row 클릭시 값 가져오기
+$(document).ready(function(){
+	
+	if(true) {
+		//$('#imageLinkURL').attr('src','../resources/img/NoImageAvailable.png')
+	}
+})

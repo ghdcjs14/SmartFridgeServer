@@ -19,4 +19,8 @@ public interface ItemListService {
 	public WriteResult deleteItem(String key, ObjectId value);
 	
 	public void insertItem(ItemListVO vo);
+	
+	public ItemListVO selectLocalGS1SourceProduct(String key, String value);
+	
+	public WriteResult deleteVoiceItem(String key, String value);
 }

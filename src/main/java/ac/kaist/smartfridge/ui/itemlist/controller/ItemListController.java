@@ -1,22 +1,25 @@
 package ac.kaist.smartfridge.ui.itemlist.controller;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Stack;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -71,7 +74,15 @@ public class ItemListController {
 		    		
 		    		System.out.print(item.getId());
 			        System.out.print(item.getFullCode());
+			        System.out.print(item.getExpirationDate());
 			        System.out.println(item.getItemName());
+			        int diffDays = getDiffOfDate(item.getExpirationDate());
+			        if(diffDays >= 0) { 
+			        	item.setRemainingDate(Integer.toString(diffDays));
+			        } else {
+			        	item.setRemainingDate("유통기한 만료");
+			        }
+			        
 			    }
 		    }
 			
@@ -102,6 +113,7 @@ public class ItemListController {
 		    System.out.print(data.getId());
 			System.out.print(data.getFullCode());
 			System.out.println(data.getItemName());
+			System.out.println(data.getImageLinkURL());
 			
 			HttpSession session = request.getSession();
 			session.setAttribute("data", data);
@@ -158,6 +170,48 @@ public class ItemListController {
 		return view;
 	}
 	
+	@RequestMapping(value="/insertVoiceItem", method=RequestMethod.POST)
+	public void insertVoiceItem(HttpServletRequest request, HttpServletResponse response, Model model, 
+	      @RequestParam String voiceItemName) {
+	        
+	   System.out.println("start insertItem");
+	   System.out.println("voiceItemName: " + voiceItemName);
+	      
+	   ItemListVO vo = null;
+	      
+	   try {
+	      if(voiceItemName != null) {
+	         vo = new ItemListVO();
+	         vo.setItemName(voiceItemName);
+	         vo.setExpirationDate(new SimpleDateFormat("yyyy-MM-dd").format(
+	        		 new Date(System.currentTimeMillis() + (16 * 24 * 60 * 60 * 1000))));	//	15일 뒤로 세팅
+	         itemListService.insertItem(vo);
+	      }
+	      
+	   } catch (Exception e) {
+	      e.printStackTrace();
+	   }
+	}
+	
+	@RequestMapping(value="/deleteVoiceItem", method=RequestMethod.POST)
+	public void deleteVoiceItem(HttpServletRequest request, HttpServletResponse response, Model model, 
+	      @RequestParam String voiceItemName) {
+	        
+	   System.out.println("start deleteItem");
+	   System.out.println("voiceItemName: " + voiceItemName);
+	      
+	   WriteResult wr = null;
+	   
+	   try {
+	      if(voiceItemName != null) {
+	         wr = itemListService.deleteVoiceItem("itemName", voiceItemName);
+	      }
+	      
+	   } catch (Exception e) {
+	      e.printStackTrace();
+	   }
+	}
+	
 	@RequestMapping(value="/insertItem", method=RequestMethod.POST)
 	public void insertItem(HttpServletRequest request, HttpServletResponse response, Model model, 
 			@RequestParam String fullCode) {
@@ -198,15 +252,21 @@ public class ItemListController {
 							vo.setItemReference(fullCode.substring(i+10,i+13));
 							vo.setVerificationNumber(fullCode.substring(i+13,i+14));
 							ai.delete(0, ai.length());
+							
+							// Search GS1 Source
+							String responseMessge = requestGS1Source(fullCode.substring(i,i+14), vo);
+							if(responseMessge == null) {
+								searchLocalGS1Source(fullCode.substring(i,i+14), vo);
+							}
+							
 							i += 13;
 						} else if("(11)".equals(ai.toString())) {
-							
-							vo.setManufacturedDate(fullCode.substring(i,i+6));
+							vo.setManufacturedDate(changeDateFormat(fullCode.substring(i,i+6)));
 							ai.delete(0, ai.length());
 							i += 5;
 							
 						} else if("(17)".equals(ai.toString())) {
-							vo.setExpirationDate(fullCode.substring(i,i+6));
+							vo.setExpirationDate(changeDateFormat(fullCode.substring(i,i+6)));
 							ai.delete(0, ai.length());
 							i += 5;
 						}
@@ -269,6 +329,40 @@ public class ItemListController {
 		}
 	}
 	
+	private int getDiffOfDate(String expirationDate) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		long diff = 0;
+		long diffDays = 0;
+		try {
+			Date beginDate = new Date();
+			Date endDate = sdf.parse(expirationDate);
+			
+			diff = endDate.getTime() - beginDate.getTime();
+			diffDays = diff / (24 * 60 * 60 * 1000);
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return (int)diffDays;
+	}
+	
+	private String changeDateFormat(String strDate) {
+		SimpleDateFormat sdf = null;
+		Date date = null;
+		
+		try {
+			sdf = new SimpleDateFormat("yyMMdd");
+			date = sdf.parse(strDate);
+			sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return sdf.format(date); 
+	}
+	
 	private String checkDigit(String fullCode) {
 		
 		int checkSum = 0;
@@ -300,5 +394,119 @@ public class ItemListController {
 		System.out.println("checkDigit = " + checkDigit);
 		
 		return Integer.toString(checkDigit);
+	}
+	
+	public String requestGS1Source(String gtin, ItemListVO vo) {
+		URL url = null;
+		HttpURLConnection conn = null;
+		BufferedReader br = null;
+		String responseMessge = null;
+				
+		try {
+			url = new URL("https://oliot-tsd.herokuapp.com/product/"+ gtin + "/BasicProductInformation");
+			System.out.println("https://oliot-tsd.herokuapp.com/product/"+ gtin +"/BasicProductInformation");
+			
+			// request
+			conn = (HttpURLConnection)url.openConnection();	
+			conn.setRequestMethod("GET");
+			
+			responseMessge = conn.getResponseMessage();
+			System.out.println("ResponseCode: " + responseMessge);
+			
+			if(responseMessge != null) {
+				br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				
+				JSONObject jsonObject = parseJson(br.readLine());
+				setGS1ProductInfo(jsonObject, vo);
+			}
+			
+		
+		} catch(Exception e) {
+			e.printStackTrace();
+		} 
+		
+		return responseMessge;
+	}
+	
+	public JSONObject parseJson(String jsonStr) {
+		
+		JSONParser jsonParser = null;
+		JSONObject jsonObject = null;
+		
+		try {
+			jsonParser = new JSONParser();
+			jsonObject = (JSONObject) jsonParser.parse(jsonStr);
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return jsonObject;
+	}
+	
+	public void setGS1ProductInfo(JSONObject jsonObj, ItemListVO vo) {
+		
+		JSONArray tempArr = null;
+		JSONObject tempObj = null;
+		
+		try {
+			// ProductName Array
+			tempArr  = (JSONArray) jsonObj.get("productName");
+			tempObj = (JSONObject) tempArr.get(0);
+			vo.setItemName(tempObj.get("value").toString());
+			
+			// BrandNameInformation
+			vo.setBrandName(((JSONObject)jsonObj.get("brandNameInformation"))
+					.get("brandName").toString());
+			
+			// productInformationLink Array
+			tempArr  = (JSONArray) jsonObj.get("productInformationLink");
+			tempObj = (JSONObject) tempArr.get(0);
+			vo.setProductInformationLinkURL(tempObj.get("url").toString());
+			
+			// imageLink Array
+			tempArr  = (JSONArray) jsonObj.get("imageLink");
+			tempObj = (JSONObject) tempArr.get(0);
+			vo.setImageLinkURL(tempObj.get("url").toString());
+			
+			// PackagingSignatureLine Array
+			tempArr  = (JSONArray) jsonObj.get("packagingSignatureLine");
+			for(int i=0; i<tempArr.size(); i++) {
+				tempObj = (JSONObject) tempArr.get(i);
+				if("DISTRIBUTOR".equals(((JSONObject)tempObj.get("partyContactRoleCode")).get("value").toString())) {
+					vo.setPartyContactName(tempObj.get("partyContactName").toString());
+					vo.setPartyContactAddress(tempObj.get("partyContactAddress").toString());
+				}
+			}
+			
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void searchLocalGS1Source(String gtin, ItemListVO vo) {
+		
+		ItemListVO temp = null;
+		try {
+			
+			temp = itemListService.selectLocalGS1SourceProduct("gtin", gtin);
+		    		
+		    if(temp != null) {
+		    	System.out.print(temp.toString());
+		    	
+		    	vo.setItemName(temp.getProductName());
+		    	vo.setBrandName(temp.getBrandName());
+		    	vo.setProductInformationLinkURL(temp.getProductInformationLinkURL());
+		    	vo.setImageLinkURL(temp.getImageLinkURL());
+		    	vo.setPartyContactName(temp.getPartyContactName());
+		    	vo.setPartyContactRoleCode(temp.getPartyContactRoleCode());
+		    	vo.setPartyContactAddress(temp.getPartyContactAddress());
+		    }
+		    
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Fridge Cam</title>
+<title>Smart Fridge</title>
 <jsp:directive.include file="/WEB-INF/views/headScript.jsp" />
 <jsp:directive.include file="/WEB-INF/views/navigation.jsp" />
 </head>
@@ -27,7 +27,7 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-lg-6">
-                                   <img src="../resources/img/fridgeImage.jpeg" alt="Fridge Image"/>
+                                   <img src="../resources/img/fridgeImage.jpg" alt="Fridge Image"/>
                                 </div>
                             </div>
                             <!-- /.row (nested) -->
@@ -46,10 +46,7 @@
     <!-- /#wrapper -->
 
     <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../vendor/jquery-3.3.1/jquery-3.3.1.js"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="../vendor/metisMenu/metisMenu.min.js"></script>

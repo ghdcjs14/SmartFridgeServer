@@ -53,7 +53,7 @@ public class ItemListServiceImpl implements ItemListService {
 		    Query query = new Query(criteria);
 		        
 		    ItemListVO data = mongoTemplate.findOne(query, ItemListVO.class, "ItemListTb");
-		    System.out.print(data.getRemark());
+		    System.out.print(data.toString());
 		   
 		    return data;
 		} catch(Exception ex) {
@@ -112,6 +112,53 @@ public class ItemListServiceImpl implements ItemListService {
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	@Override
+	public ItemListVO selectLocalGS1SourceProduct(String key, String value) {
+		try {
+			System.out.println("mongoTemplate: " + mongoTemplate);
+			
+			Criteria criteria = new Criteria(key);
+			criteria.is(value);
+	        
+		    Query query = new Query(criteria);
+		        
+		    ItemListVO data = mongoTemplate.findOne(query, ItemListVO.class, "localGS1SourceTb");
+		    System.out.print(data.toString());
+		   
+		    return data;
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		return  null;
+	}
+	
+	@Override
+	public WriteResult deleteVoiceItem(String key, String value) {
+		WriteResult wr = null;
+		try {
+			System.out.println("mongoTemplate: " + mongoTemplate);
+			
+			// 삭제할 데이터 1건 조
+			Criteria criteria = new Criteria(key);
+			criteria.is(value);
+		    Query query = new Query(criteria);
+		    ItemListVO data = mongoTemplate.findOne(query, ItemListVO.class, "ItemListTb");
+		    
+		    // 조회된 데이터 삭제 
+		    if(data != null) {
+		    	criteria = new Criteria("_id");
+			    criteria.is(new ObjectId(data.getId()));
+			    query = new Query(criteria);
+			    wr = mongoTemplate.remove(query, ItemListVO.class, "ItemListTb");
+		    }
+		   
+		    return wr;
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		return  null;
 	}
 	
 	
