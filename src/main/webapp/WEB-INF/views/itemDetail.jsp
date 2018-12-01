@@ -31,15 +31,22 @@
                                     <form role="form" method="post" action="itemUpdate">
                                     	<input type='hidden' name='id' value='${data.id }'>
                                     	<div class="form-group">
-                                            <c:choose>
-	                                   			<c:when test="${data.imageLinkURL eq null}">
-	                                   				<img style='width:100px; height:100px;' src="../resources/img/NoImageAvailable.png" alt="Product Image"
-	                                   				style="object-fit:contain"/>
-	                                   			</c:when>
-	                                   			<c:otherwise>
-	                                   				<img src='${data.imageLinkURL}' alt="Product Image"/>
-	                                   			</c:otherwise>
-	                                   		</c:choose>
+                                            <label>물품명</label>
+                                            <input name="itemName" type="text" class="form-control" value="${data.itemName }"/>
+                                        </div>
+                                    	<div class="form-group">
+                                    		<label>물품 이미지</label>
+                                    		<p>
+	                                            <c:choose>
+		                                   			<c:when test="${data.imageLinkURL eq null}">
+		                                   				<img style='width:100px; height:100px;' src="../resources/img/NoImageAvailable.png" alt="Product Image"
+		                                   				style="object-fit:contain"/>
+		                                   			</c:when>
+		                                   			<c:otherwise>
+		                                   				<img src='${data.imageLinkURL}' alt="Product Image"/>
+		                                   			</c:otherwise>
+		                                   		</c:choose>
+	                                   		</p>
                                         </div>
                                         <div class="form-group">
                                             <label>GS1 Code</label>
@@ -63,7 +70,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label>유통기한</label>
-                                            <p class="form-control-static">${data.expirationDate }</p>
+                                            <input name="expirationDate" type="text" class="form-control" value="${data.expirationDate }"/>
                                         </div>
                                         <div class="form-group">
                                             <label>유통사</label>

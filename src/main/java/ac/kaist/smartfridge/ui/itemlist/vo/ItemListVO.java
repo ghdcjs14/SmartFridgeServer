@@ -19,6 +19,7 @@ public class ItemListVO {
     private String remainingDate; 		// 남은 날짜
     
     // GS1 Source Data
+    private String gtin;						// GTIN
     private String productName;					// 상품명
 	private String brandName;					// 브랜드명 
 	private String productInformationLinkURL;	// 상품 구매 URL
@@ -149,26 +150,22 @@ public class ItemListVO {
 	public void setRemainingDate(String remainingDate) {
 		this.remainingDate = remainingDate;
 	}
+	public String getGtin() {
+		return gtin;
+	}
+	public void setGtin(String gtin) {
+		this.gtin = gtin;
+	}
 	@Override
 	public String toString() {
 		return "ItemListVO [id=" + id + ", fullCode=" + fullCode + ", indicator=" + indicator + ", memberOrganization="
 				+ memberOrganization + ", companyNumber=" + companyNumber + ", itemReference=" + itemReference
 				+ ", manufacturedDate=" + manufacturedDate + ", expirationDate=" + expirationDate + ", itemName="
 				+ itemName + ", count=" + count + ", remark=" + remark + ", verificationNumber=" + verificationNumber
-				+ ", productName=" + productName + ", brandName=" + brandName + ", productInformationLinkURL="
-				+ productInformationLinkURL + ", imageLinkURL=" + imageLinkURL + ", partyContactRoleCode="
-				+ partyContactRoleCode + ", partyContactName=" + partyContactName + ", partyContactAddress="
-				+ partyContactAddress + ", getId()=" + getId() + ", getFullCode()=" + getFullCode()
-				+ ", getIndicator()=" + getIndicator() + ", getMemberOrganization()=" + getMemberOrganization()
-				+ ", getCompanyNumber()=" + getCompanyNumber() + ", getItemReference()=" + getItemReference()
-				+ ", getManufacturedDate()=" + getManufacturedDate() + ", getExpirationDate()=" + getExpirationDate()
-				+ ", getItemName()=" + getItemName() + ", getCount()=" + getCount() + ", getRemark()=" + getRemark()
-				+ ", getVerificationNumber()=" + getVerificationNumber() + ", getProductName()=" + getProductName()
-				+ ", getBrandName()=" + getBrandName() + ", getProductInformationLinkURL()="
-				+ getProductInformationLinkURL() + ", getImageLinkURL()=" + getImageLinkURL()
-				+ ", getPartyContactRoleCode()=" + getPartyContactRoleCode() + ", getPartyContactName()="
-				+ getPartyContactName() + ", getPartyContactAddress()=" + getPartyContactAddress() + ", getClass()="
-				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+				+ ", remainingDate=" + remainingDate + ", gtin=" + gtin + ", productName=" + productName
+				+ ", brandName=" + brandName + ", productInformationLinkURL=" + productInformationLinkURL
+				+ ", imageLinkURL=" + imageLinkURL + ", partyContactRoleCode=" + partyContactRoleCode
+				+ ", partyContactName=" + partyContactName + ", partyContactAddress=" + partyContactAddress + "]";
 	}
-    
+	
 }

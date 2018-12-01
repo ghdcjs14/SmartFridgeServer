@@ -53,7 +53,9 @@ public class ItemListServiceImpl implements ItemListService {
 		    Query query = new Query(criteria);
 		        
 		    ItemListVO data = mongoTemplate.findOne(query, ItemListVO.class, "ItemListTb");
-		    System.out.print(data.toString());
+		    if(data != null) {
+		    	System.out.print(data.toString());
+		    }
 		   
 		    return data;
 		} catch(Exception ex) {
@@ -72,6 +74,8 @@ public class ItemListServiceImpl implements ItemListService {
 		    Query query = new Query(criteria);
 
 		    Update update = new Update();
+		    update.set("itemName", vo.getItemName());
+		    update.set("expirationDate", vo.getExpirationDate());
 		    update.set("count", vo.getCount());
 		    update.set("remark", vo.getRemark());
 		    
@@ -125,7 +129,9 @@ public class ItemListServiceImpl implements ItemListService {
 		    Query query = new Query(criteria);
 		        
 		    ItemListVO data = mongoTemplate.findOne(query, ItemListVO.class, "localGS1SourceTb");
-		    System.out.print(data.toString());
+		    if(data != null) {
+		    	System.out.print(data.toString());
+		    }
 		   
 		    return data;
 		} catch(Exception ex) {
@@ -160,6 +166,16 @@ public class ItemListServiceImpl implements ItemListService {
 		}
 		return  null;
 	}
-	
+
+	@Override
+	public void insertLocalGS1SourceItem(ItemListVO vo) {
+		try {
+			System.out.println("mongoTemplate: " + mongoTemplate);
+			mongoTemplate.insert(vo,"localGS1SourceTb");
+		   
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 	
 }

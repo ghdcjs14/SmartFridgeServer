@@ -18,8 +18,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -127,7 +129,8 @@ public class ItemListController {
 	@RequestMapping(value="/itemUpdate", method=RequestMethod.POST)
 	public ModelAndView updateItemDetail(HttpServletRequest request,
 			HttpServletResponse response, Model model, @RequestParam String id, 
-			@RequestParam Double count, @RequestParam String remark) {
+			@RequestParam String itemName, @RequestParam Double count, 
+			@RequestParam String expirationDate, @RequestParam String remark) {
         
 		ModelAndView view = null;
 		WriteResult wr = null;
@@ -138,6 +141,9 @@ public class ItemListController {
 			
 			ObjectId oid = new ObjectId(id);
 			ItemListVO vo = new ItemListVO();
+			
+			vo.setItemName(itemName);
+			vo.setExpirationDate(expirationDate);
 			vo.setRemark(remark);
 			vo.setCount(count);
 			
@@ -186,6 +192,33 @@ public class ItemListController {
 	         vo.setExpirationDate(new SimpleDateFormat("yyyy-MM-dd").format(
 	        		 new Date(System.currentTimeMillis() + (16 * 24 * 60 * 60 * 1000))));	//	15일 뒤로 세팅
 	         itemListService.insertItem(vo);
+	      }
+	      
+	   } catch (Exception e) {
+	      e.printStackTrace();
+	   }
+	}
+	
+	@RequestMapping(value="/insertLocalGS1SourceItem", method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public void insertLocalGS1SourceItem(HttpServletRequest request, HttpServletResponse response, Model model, 
+	      @RequestBody JSONObject jsonLocalGS1SourceItemObj) {
+	        
+	   System.out.println("start insertLocalGS1SourceItem");
+	   if(jsonLocalGS1SourceItemObj != null) {
+		   System.out.println("jsonObj: " + jsonLocalGS1SourceItemObj.toString());
+	   }
+
+	   ItemListVO vo = null;
+	   JSONObject jsonObject = null;
+	      
+	   try {
+	      if(jsonLocalGS1SourceItemObj != null) {
+	    	  jsonObject = jsonLocalGS1SourceItemObj;
+	    	  vo = new ItemListVO();
+	    	  
+	    	  setLocalGS1ProductInfo(jsonObject, vo);
+	    	  
+	    	  itemListService.insertLocalGS1SourceItem(vo);
 	      }
 	      
 	   } catch (Exception e) {
@@ -254,8 +287,9 @@ public class ItemListController {
 							ai.delete(0, ai.length());
 							
 							// Search GS1 Source
-							String responseMessge = requestGS1Source(fullCode.substring(i,i+14), vo);
-							if(responseMessge == null) {
+							System.out.println(fullCode.substring(i,i+14));
+							Boolean bResponseState = requestGS1Source(fullCode.substring(i,i+14), vo);
+							if(!bResponseState) {
 								searchLocalGS1Source(fullCode.substring(i,i+14), vo);
 							}
 							
@@ -396,11 +430,10 @@ public class ItemListController {
 		return Integer.toString(checkDigit);
 	}
 	
-	public String requestGS1Source(String gtin, ItemListVO vo) {
+	public boolean requestGS1Source(String gtin, ItemListVO vo) {
 		URL url = null;
 		HttpURLConnection conn = null;
 		BufferedReader br = null;
-		String responseMessge = null;
 				
 		try {
 			url = new URL("https://oliot-tsd.herokuapp.com/product/"+ gtin + "/BasicProductInformation");
@@ -410,14 +443,25 @@ public class ItemListController {
 			conn = (HttpURLConnection)url.openConnection();	
 			conn.setRequestMethod("GET");
 			
-			responseMessge = conn.getResponseMessage();
-			System.out.println("ResponseCode: " + responseMessge);
+			// Response가 다 정상으로 날라옴...
+//			responseMessge = conn.getResponseMessage();
+//			responseCode = conn.getResponseCode();
+//			System.out.println("ResponseCode: " + responseCode);
+//			System.out.println("Error: " + conn.getErrorStream());
+//			System.out.println("ResponseMessge: " + responseMessge);
 			
-			if(responseMessge != null) {
-				br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-				
-				JSONObject jsonObject = parseJson(br.readLine());
+			br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			
+			JSONObject jsonObject = parseJson(br.readLine());
+			System.out.println("jsonObject: " + jsonObject);
+			
+			if(jsonObject != null) {
 				setGS1ProductInfo(jsonObject, vo);
+				
+				return true;
+				
+			} else {
+				return false;
 			}
 			
 		
@@ -425,10 +469,14 @@ public class ItemListController {
 			e.printStackTrace();
 		} 
 		
-		return responseMessge;
+		return false;
 	}
 	
 	public JSONObject parseJson(String jsonStr) {
+		
+		if(jsonStr == null) {
+			return null;
+		}
 		
 		JSONParser jsonParser = null;
 		JSONObject jsonObject = null;
@@ -472,7 +520,7 @@ public class ItemListController {
 			// PackagingSignatureLine Array
 			tempArr  = (JSONArray) jsonObj.get("packagingSignatureLine");
 			for(int i=0; i<tempArr.size(); i++) {
-				tempObj = (JSONObject) tempArr.get(i);
+ 				tempObj = (JSONObject) tempArr.get(i);
 				if("DISTRIBUTOR".equals(((JSONObject)tempObj.get("partyContactRoleCode")).get("value").toString())) {
 					vo.setPartyContactName(tempObj.get("partyContactName").toString());
 					vo.setPartyContactAddress(tempObj.get("partyContactAddress").toString());
@@ -503,10 +551,29 @@ public class ItemListController {
 		    	vo.setPartyContactName(temp.getPartyContactName());
 		    	vo.setPartyContactRoleCode(temp.getPartyContactRoleCode());
 		    	vo.setPartyContactAddress(temp.getPartyContactAddress());
+		    } else {
+		    	vo.setItemName("No Name");
 		    }
 		    
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void setLocalGS1ProductInfo(JSONObject jsonObj, ItemListVO vo) {
+		
+		try {
+			vo.setGtin(jsonObj.get("gtin").toString());
+			vo.setProductName(jsonObj.get("productName").toString());
+			vo.setBrandName(jsonObj.get("brandName").toString());
+			vo.setProductInformationLinkURL(jsonObj.get("productInformationLinkURL").toString());
+			vo.setImageLinkURL(jsonObj.get("imageLinkURL").toString());
+			vo.setPartyContactRoleCode(jsonObj.get("partyContactRoleCode").toString());
+			vo.setPartyContactName(jsonObj.get("partyContactName").toString());
+			vo.setPartyContactAddress(jsonObj.get("partyContactAddress").toString());
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 }
