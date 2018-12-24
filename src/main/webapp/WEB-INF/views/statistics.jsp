@@ -22,14 +22,14 @@
                 <div class="col-lg-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Open/Close Event
+                            <i class="fa fa-bar-chart-o fa-fw"></i> The latest events
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-lg-4">
                                     <div class="table-responsive">
-                                        <table class="table table-bordered table-striped">
+                                        <table id='latestEventTable' class="table table-bordered table-striped">
                                             <thead>
                                                 <tr>
                                                     <th>Date</th>
@@ -38,56 +38,6 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>10/21/2013</td>
-                                                    <td>3:29 PM</td>
-                                                    <td>CLOSE</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>10/21/2013</td>
-                                                    <td>3:20 PM</td>
-                                                    <td>OPEN</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>10/21/2013</td>
-                                                    <td>3:29 PM</td>
-                                                    <td>CLOSE</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>10/21/2013</td>
-                                                    <td>3:20 PM</td>
-                                                    <td>OPEN</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>10/21/2013</td>
-                                                    <td>3:29 PM</td>
-                                                    <td>CLOSE</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>10/21/2013</td>
-                                                    <td>3:20 PM</td>
-                                                    <td>OPEN</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>10/21/2013</td>
-                                                    <td>2:13 PM</td>
-                                                    <td>CLOSE</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>10/21/2013</td>
-                                                    <td>2:13 PM</td>
-                                                    <td>OPEN</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>10/21/2013</td>
-                                                    <td>2:13 PM</td>
-                                                    <td>CLOSE</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>10/21/2013</td>
-                                                    <td>2:13 PM</td>
-                                                    <td>OPEN</td>
-                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>

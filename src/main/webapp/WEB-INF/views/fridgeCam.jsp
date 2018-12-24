@@ -27,7 +27,7 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-lg-6">
-                                   <img src="../resources/img/fridgeImage.jpg" alt="Fridge Image"/>
+                                   <img src="../resources/img/fridgeImage.jpg" alt="Fridge Image" style="max-width: 100%; height: auto;"/>
                                 </div>
                             </div>
                             <!-- /.row (nested) -->

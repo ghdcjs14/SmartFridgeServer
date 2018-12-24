@@ -187,11 +187,16 @@ public class ItemListController {
 	      
 	   try {
 	      if(voiceItemName != null) {
+	    	  String date = new SimpleDateFormat("yyyy-MM-dd").format(
+		        		 new Date(System.currentTimeMillis() + (15 * 24 * 60 * 60 * 1000)));
+	    	 
 	         vo = new ItemListVO();
 	         vo.setItemName(voiceItemName);
-	         vo.setExpirationDate(new SimpleDateFormat("yyyy-MM-dd").format(
-	        		 new Date(System.currentTimeMillis() + (16 * 24 * 60 * 60 * 1000))));	//	15일 뒤로 세팅
+	         vo.setExpirationDate(date);	//	15일 뒤로 세팅
+	         vo.setManufacturedDate(date);	//	15일 뒤로 세팅
+	         
 	         itemListService.insertItem(vo);
+	         
 	      }
 	      
 	   } catch (Exception e) {
@@ -240,6 +245,11 @@ public class ItemListController {
 	         wr = itemListService.deleteVoiceItem("itemName", voiceItemName);
 	      }
 	      
+	      // vo가 없어서 Service에서 처리
+//	      if(wr.wasAcknowledged()) {
+//	    	  itemListService.captureEvent("pull", vo);
+//	      }
+	      
 	   } catch (Exception e) {
 	      e.printStackTrace();
 	   }
@@ -252,7 +262,6 @@ public class ItemListController {
 		System.out.println("start isertItem");
 		System.out.println("fullCode: " + fullCode);
 		
-		WriteResult wr = null;
 		ItemListVO vo = null;
 		
 		try {
@@ -278,7 +287,7 @@ public class ItemListController {
 						}
 						
 						if("(01)".equals(ai.toString())) {
-							
+							vo.setGtin(fullCode.substring(i,i+14));
 							vo.setIndicator(fullCode.substring(i,i+1));
 							vo.setMemberOrganization(fullCode.substring(i+1,i+4));
 							vo.setCompanyNumber(fullCode.substring(i+4,i+10));
@@ -312,6 +321,7 @@ public class ItemListController {
 						System.out.println("[!!!바코드 판독오류!!!] 바코드의 체크 디지트가 일치하지 않습니다.");
 						return;
 					}
+					vo.setGtin(fullCode);
 					
 					// 국가코드번호(2~3자리) + 국내기업체 코드번호(3~6자리) + 상품등록번호(3~6자리) + 체크디지트(1자리)
 					// 처음 3자리 : 우리나라 880
@@ -339,6 +349,9 @@ public class ItemListController {
 						
 					}
 					
+					// 13자리로 검색
+					searchLocalGS1Source(fullCode, vo);
+					
 					
 				} else if(fullCode.length() == 8) {
 					if(!(checkDigit(fullCode).equals(fullCode.substring(7)))) {
@@ -346,14 +359,33 @@ public class ItemListController {
 						return;
 					}
 					
+					vo.setGtin(fullCode);
+					
 					// 국가코드번호(3자리) + 국내기업체 코드번호(3자리) + 상품등록번호(1자리) + 체크디지트(1자리)
 					vo.setMemberOrganization(fullCode.substring(0, 3));	// 처음 3자리 : 우리나라 880
 					vo.setCompanyNumber(fullCode.substring(3,6));		// 업체코드: 3자리
 					vo.setItemReference(fullCode.substring(6,7));		// 상품코드: 1자리
 					vo.setVerificationNumber(fullCode.substring(7,8));	// 체크디지트: 1자리
+					
+					// 8자리로 검색
+					searchLocalGS1Source(fullCode, vo);
 				}
 				
 				System.out.println(vo.toString());
+			}
+			
+			// 날짜 데이터 없으면 15일 뒤로 세팅 
+			if(vo.getManufacturedDate() == null) {
+				String date = new SimpleDateFormat("yyyy-MM-dd").format(
+		        		 new Date(System.currentTimeMillis() + (15 * 24 * 60 * 60 * 1000)));
+				
+				vo.setManufacturedDate(date);
+			}
+			if(vo.getExpirationDate() == null) {
+				String date = new SimpleDateFormat("yyyy-MM-dd").format(
+		        		 new Date(System.currentTimeMillis() + (15 * 24 * 60 * 60 * 1000)));
+				
+				vo.setExpirationDate(date);
 			}
 			
 			itemListService.insertItem(vo);
@@ -372,7 +404,7 @@ public class ItemListController {
 			Date endDate = sdf.parse(expirationDate);
 			
 			diff = endDate.getTime() - beginDate.getTime();
-			diffDays = diff / (24 * 60 * 60 * 1000);
+			diffDays = diff / (24 * 60 * 60 * 1000) + 1;
 			
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -576,4 +608,5 @@ public class ItemListController {
 		}
 		
 	}
+	
 }

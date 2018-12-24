@@ -70,31 +70,22 @@ public class StatisticsController {
 		return view;
 	}
 	
-	@RequestMapping(value = "/getOpenCloseEPCISEvent", method = RequestMethod.GET)
+	@RequestMapping(value = "/getLatestEvents", method = RequestMethod.POST)
 	@ResponseBody
-	public void getOpenCloseEPCISEvent(HttpServletResponse response, HttpServletRequest request) {
-		
-		List<ItemListVO> dataList = null;
+	public void getLatestEvents(HttpServletResponse response, HttpServletRequest request,
+			@RequestParam String eventList) {
 		
 		try {
 			
-			dataList = statisticsService.selectItemList();
-			
-			if(dataList != null) {
-		    	for (ItemListVO item : dataList) {
-		    		
-		    		System.out.print(item.getId());
-			        System.out.print(item.getFullCode());
-			        System.out.println(item.getItemName());
-			    }
+			if(eventList != null) {
+				HttpSession session = request.getSession();
+				session.setAttribute("eventList", eventList);
 		    }
-			
-			HttpSession session = request.getSession();
-			session.setAttribute("dataList", dataList);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
 	
 }
