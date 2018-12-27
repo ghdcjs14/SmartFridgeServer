@@ -13,10 +13,15 @@ It manages items in the fridge and creates epcis events(push, pull, and query) u
   
 <h2>UI</h2>
 <ul>
-  <li>Item list in the Firdge</li>
+  <li><b>Item list in the Firdge</b></li>
+  <p></p>
   <p><img src='https://github.com/ghdcjs14/SmartFridgeServer/blob/master/UI_ItemList.png' alt='ItemList UI'/></p>
-  <li>a picture of the fridge on the phone</li>
+  
+  <li><b>a picture of the fridge on the phone</b></li>
+  <p></p>
   <p><img src='https://github.com/ghdcjs14/SmartFridgeServer/blob/master/UI_PictureOfTheFirdge.png' alt='a picture of the Firdge UI'/></p>
-  <li>EPCIS events statistics</li>
+  
+  <li><b>EPCIS events statistics</b></li>
+  <p></p>
   <p><img src='https://github.com/ghdcjs14/SmartFridgeServer/blob/master/UI_Statistics.png' alt='Statistics UI'/></p>
 </ul>
