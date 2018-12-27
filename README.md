@@ -1,6 +1,6 @@
 # SmartFridgeServer
-<p>This is a fall project for SEP564 at KAIST</p>
-Smart Fridge Server manages items in the fridge and creates epcis events(push, pull, and query) using EPCIS Caputre/Query Interface
+<p>This is a project for SEP564 at KAIST</p>
+It manages items in the fridge and creates epcis events(push, pull, and query) using EPCIS Caputre Interface
 
 <h2>Installation</h2>
 <ul>
@@ -9,7 +9,7 @@ Smart Fridge Server manages items in the fridge and creates epcis events(push, p
   <li>SpringFramework 4.3.8</li>
   <li>MongoDB 4.0</li>
   <li>EPCIS 1.2.10</li>
-  </ul>
+ </ul>
   
 <h2>UI</h2>
 <ul>
